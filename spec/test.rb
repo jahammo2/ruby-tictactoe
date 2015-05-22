@@ -1,17 +1,7 @@
 require 'spec_helper'
+require 'game'
 
-describe 'Game' do
-
-  describe "Game questions" do
-
-    describe "humanLetter" do
-
-      it "should be X if X was chosen" do
-        assert true
-        # @humanLetter = 'X'
-        # @humanLetter.must_equal 'X'
-        
-      end
-    end
+describe Game do
+  xit "should return X if human chose X" do
   end
-end
+end 
