@@ -1,12 +1,17 @@
 require 'spec_helper'
-require 'game'
 require 'board'
+require 'spec_computer'
+require 'spec_human'
+require 'human'
+require 'computer'
+require 'game'
 
 describe Game do
   
-  game = Game.new
-
   board = Board.new
+  human = Human.new(board)
+  computer = Computer.new(board)
+  game = Game.new(board, computer, human)
 
   it "will choose human if nil" do
     expect(game.choose_first).to eq('human')
@@ -17,20 +22,63 @@ describe Game do
     expect(game.first_person).to eq('human')
   end
 
+  it "will know how many moves have been made" do
+    board.game_board = ['x','o','o','-','-','-','-','-','-','-','-','-','-','-','-','-']
+    expect(board.check_move_amount).to eq(3)
+  end
+  
+  # it "will call correct_human_move method if the spot is already taken or doesn't exist" do
+  #   board.game_board = ['-','-','x','-','-','-','-','-','-','-','-','-','-','-','-','-']
+  #   expect(game.human_move(2)).to receive(:correct_human_move)
+  # end
+
   describe Board do
+    before(:each) do
+      board.game_board = ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-']
+    end
+
     it "should be a blank board" do
-      expect(board.game_board).to eq(['','','','','','','','','','','','','','','',''])
+      expect(board.game_board).to eq(['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'])
     end
 
     it "puts an x or o in a spot" do
-      expect {board.move(2,'x')}.to change {board.game_board[2]}.from('').to('x')
+      expect {board.move(2,'x')}.to change {board.game_board[2]}.from('-').to('x')
     end
 
     it "reports a win if there are 4 O's in a row" do
-      board.game_board = ['o','o','o','o','','','','','','','','','','','','']
-      expect(board.checkwin).to eq(true)
+      board.game_board = ['o','o','o','o','-','-','-','-','-','-','-','-','-','-','-','-']
+      expect(board.check_win).to eq(true)
     end
 
+    it "reports a win if there are 4 O's in a different row" do
+      board.game_board = ['-','-','-','-','o','o','o','o','-','-','-','-','-','-','-','-']
+      expect(board.check_win).to eq(true)
+    end
+
+    it "reports a win if there are 4 O's in a column" do
+      board.game_board = ['o','-','-','-','o','-','-','-','o','-','-','-','o','-','-','-']
+      expect(board.check_win).to eq(true)
+    end
+
+    it "reports a win if there are 4 O's in a different column" do
+      board.game_board = ['-','o','-','-','-','o','-','-','-','o','-','-','-','o','-','-']
+      expect(board.check_win).to eq(true)
+    end
+
+    it "reports a win if there are 4 O's in a diagonal" do
+      board.game_board = ['o','-','-','-','-','o','-','-','-','-','o','-','-','-','-','o']
+      expect(board.check_win).to eq(true)
+    end
+
+    it "ends in a cat scan if all possible moves are madeand there are not 4 in a row." do
+      board.game_board = ['o','o','x','x','x','x','o','o','o','o','x','x','x','x','o','o']
+      expect(board.check_cat_scan).to eq(true)
+    end
+
+    it "does not end in a cat scan if all possible moves have not been made and there are not 4 in a row." do
+      board.game_board = ['o','o','x','x','x','x','o','o','o','o','x','x','x','-','o','o']
+      expect(board.check_cat_scan).to eq(false)
+    end
     # it "should be have human as X, computer as O" do
     #   new_game = NewGame.new
     #   expect(new_game.hc).to eq('X')
@@ -46,7 +94,7 @@ describe Game do
 
   # describe GameMoves do
   #
-  #   def counter 
+  #   def cter 
   #     new_game = NewGame.new
   #     counts = 0
   #     new_game.board.each { |x| counts += 1 if x = 'X' || 'O' }
