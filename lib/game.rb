@@ -5,6 +5,10 @@ computer = Computer.new(board)
 class Game
   attr_reader :first_person, :board, :computer, :human
 
+  def log(s)
+    puts s
+  end
+
   def initialize(board, computer, human)
     @board = board
     @computer = computer
@@ -12,7 +16,7 @@ class Game
   end
 
   def start
-    puts "human is 'X' and computer is 'O'"
+    log "human is 'X' and computer is 'O'"
     choose_first
     board.print_board
     @first_person == 'human' ? human_move : comp_move
@@ -24,7 +28,7 @@ class Game
 
   def human_move
     board.print_board
-    puts "what move would you like to make? Choose an integer from 0-15"
+    log "what move would you like to make? Choose an integer from 0-15"
     spot = gets.chomp.to_i
     human.check_move_avail(spot) ? make_human_move(spot) : correct_human_move
   end
@@ -35,7 +39,7 @@ class Game
   end
 
   def correct_human_move
-    puts "I'm sorry that spot was either taken or doesn't exist"
+    log "I'm sorry that spot was either taken or doesn't exist"
     human_move
   end
 
@@ -47,12 +51,12 @@ class Game
 
   def choose_first
     first = get_first || 'human'
-    puts first + " goes first"
+    log first + " goes first"
     first_move(first)
   end
 
   def get_first
-    puts "Who goes first? Computer or human?"
+    log "Who goes first? Computer or human?"
     this_first = case (gets.chomp).downcase
     when "human"
       "human"

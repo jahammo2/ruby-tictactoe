@@ -1,4 +1,5 @@
 board = Board.new
+require './lib/pair'
 
 class Computer
   attr_reader :board
@@ -44,21 +45,12 @@ class Computer
     check_four(6,3) || check_four(5,5)
   end
 
-  def check_four(num,param)
-    four_vars(num,param)
-    value = num + (param * 2) if @num1 == @num2 && @num1 == @num3 && @num4 == '-' && @num1 != '-' 
-    value = num + param if @num1 == @num2 && @num1 == @num4 && @num3 == '-' && @num1 != '-' 
-    value = num - param if @num1 == @num3 && @num1 == @num4 && @num2 == '-' && @num1 != '-' 
-    value = num if @num2 == @num3 && @num2 == @num4 && @num1 == '-' && @num2 != '-' 
-    value
+  def check_three(num,param)
+    Pair.new(num,param,board).check_three
   end
 
-  def four_vars(num,param)
-    @num1 = board.game_board[num]
-    @num2 = board.game_board[num - param]
-    @num3 = board.game_board[num + param]
-    @num4 = board.game_board[num + (param * 2)]
-    @array = [@num1,@num2,@num3,@num4]
+  def check_four(num,param)
+    Pair.new(num,param,board).check_four
   end
 
   def preemptive_block
@@ -75,22 +67,6 @@ class Computer
 
   def block_diag
     check_three(6,3) || check_three(5,5)
-  end
-  
-  def check_three(num,param)
-    four_vars(num,param)
-    value = nil
-    value = find_blank_spot(num,param) if (@num4== @num1 || @num4== @num2 || @num4== @num3) && @num4 == 'x' && ((@num1 == '-' && @num2 == '-') || (@num3 == '-' && @num2 == '-') || (@num1 == '-' && @num3 == '-'))
-    (value = find_blank_spot(num,param) if (@num1== @num4 || @num1== @num2 || @num1== @num3) && @num1 == 'x' && ((@num4 == '-' && @num2 == '-') || (@num3 == '-' && @num2 == '-') || (@num4 == '-' && @num3 == '-'))) unless value != nil
-    (value = find_blank_spot(num,param) if (@num2== @num1 || @num2== @num4 || @num2== @num3) && @num2 == 'x' && ((@num4 == '-' && @num1 == '-') || (@num3 == '-' && @num1 == '-') || (@num4 == '-' && @num3 == '-'))) unless value != nil
-    (value = find_blank_spot(num,param) if (@num3== @num1 || @num3== @num4 || @num3== @num2) && @num3 == 'x' && ((@num4 == '-' && @num2 == '-') || (@num1 == '-' && @num2 == '-') || (@num4 == '-' && @num1 == '-'))) unless value != nil
-    value
-  end
-
-  def find_blank_spot(num,param)
-    value = nil
-    [num,num - param,num + param,(num + (param * 2))].map { |x| value = x if board.game_board[x] == '-' } 
-    value
   end
 
   def random_move
